@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Ilustrasi jeep offroad">
+<defs><linearGradient id="gjh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16263f"/><stop offset="1" stop-color="#0d1626"/></linearGradient></defs>
+<rect width="800" height="500" fill="url(#gjh)"/>
+<path d="M0 330 L120 230 L220 300 L340 190 L470 300 L580 220 L700 310 L800 250 V500 H0Z" fill="#0a1220" opacity=".55"/>
+<path d="M0 380 L150 300 L280 360 L430 280 L600 370 L800 310 V500 H0Z" fill="#070d18" opacity=".7"/>
+<ellipse cx="410" cy="418" rx="320" ry="16" fill="#000" opacity=".35"/>
+<path d="M170 245 L196 160 Q200 150 212 150 L452 150 Q462 150 466 160 L482 245 Z" fill="#2c2f38"/><path d="M215 165 L440 165 L452 232 L205 232 Z" fill="#9cc7e8" opacity=".55"/><path d="M330 165 V232" stroke="#2c2f38" stroke-width="8"/>
+<path d="M140 335 L140 262 Q140 247 156 247 L458 247 L474 218 L692 218 Q708 218 708 234 L708 335 Z" fill="#2c2f38"/>
+<path d="M458 247 L474 218 L692 218" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="3"/>
+<rect x="690" y="228" width="16" height="72" rx="4" fill="#10151f"/><path d="M693 238H703M693 250H703M693 262H703M693 274H703M693 286H703" stroke="#8d97a8" stroke-width="3"/>
+<circle cx="672" cy="258" r="15" fill="#fff4c8"/><circle cx="672" cy="258" r="8" fill="#ffc72c"/>
+<rect x="120" y="318" width="600" height="26" rx="8" fill="#171c28"/>
+<text x="250" y="300" font-family="Arial Black, Arial" font-size="24" font-weight="900" fill="#fff" opacity=".85">YKS</text>
+<g fill="none" stroke="#10151f" stroke-width="20"><circle cx="235" cy="352" r="62"/><circle cx="590" cy="352" r="62"/></g>
+<g fill="none" stroke="#8d97a8" stroke-width="3" opacity=".8"><circle cx="235" cy="352" r="44"/><circle cx="590" cy="352" r="44"/><path d="M235 308V396M191 352H279M590 308V396M546 352H634"/></g>
+<circle cx="235" cy="352" r="12" fill="#c7ced9"/><circle cx="590" cy="352" r="12" fill="#c7ced9"/>
+<path d="M165 340 Q235 270 305 340" fill="none" stroke="#2c2f38" stroke-width="14"/><path d="M520 340 Q590 270 660 340" fill="none" stroke="#2c2f38" stroke-width="14"/>
+</svg>

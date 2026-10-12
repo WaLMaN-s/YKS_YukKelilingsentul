@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="Logo YKS">
+<circle cx="50" cy="50" r="47" fill="#0B1424" stroke="#FFC72C" stroke-width="5"/>
+<path d="M14 66 L38 34 L50 50 L62 30 L86 66Z" fill="#2b4670"/><path d="M14 66 L38 34 L50 50 L62 30 L86 66Z" fill="none" stroke="#FFC72C" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M24 72H76" stroke="#FFC72C" stroke-width="4" stroke-linecap="round"/>
+<text x="50" y="28" text-anchor="middle" font-family="Arial Black, Arial" font-size="17" font-weight="900" fill="#FFC72C" font-style="italic">YKS</text></svg>

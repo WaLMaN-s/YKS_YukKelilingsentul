@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" role="img" aria-label="Ilustrasi motor trail"><defs><linearGradient id="gcrf150l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#16263f"/><stop offset="1" stop-color="#0d1626"/></linearGradient></defs>
+<rect width="800" height="500" fill="url(#gcrf150l)"/>
+<path d="M0 330 L120 230 L220 300 L340 190 L470 300 L580 220 L700 310 L800 250 V500 H0Z" fill="#0a1220" opacity=".55"/>
+<path d="M0 380 L150 300 L280 360 L430 280 L600 370 L800 310 V500 H0Z" fill="#070d18" opacity=".7"/>
+<g transform="translate(0,10)">
+  <ellipse cx="400" cy="408" rx="300" ry="16" fill="#000" opacity=".35"/>
+  <g fill="none" stroke="#10151f" stroke-width="16"><circle cx="250" cy="330" r="68"/><circle cx="565" cy="330" r="68"/></g>
+  <g fill="none" stroke="#8d97a8" stroke-width="2" opacity=".8">
+    <circle cx="250" cy="330" r="52"/><circle cx="565" cy="330" r="52"/>
+    <path d="M250 278V382M198 330H302M213 293L287 367M287 293L213 367"/>
+    <path d="M565 278V382M513 330H617M528 293L602 367M602 293L528 367"/>
+  </g>
+  <circle cx="250" cy="330" r="10" fill="#c7ced9"/><circle cx="565" cy="330" r="10" fill="#c7ced9"/>
+  <path d="M345 292L252 330" stroke="#1b2230" stroke-width="12" stroke-linecap="round"/>
+  <path d="M492 200L565 330" stroke="#c7ced9" stroke-width="9" stroke-linecap="round"/>
+  <path d="M484 206L568 326" stroke="#10151f" stroke-width="4" stroke-linecap="round" opacity=".6"/>
+  <rect x="345" y="262" width="105" height="72" rx="14" fill="#2a3242"/>
+  <path d="M365 318L190 296" stroke="#b8c0cc" stroke-width="12" stroke-linecap="round"/>
+  <path d="M192 296L168 292" stroke="#7d8696" stroke-width="12" stroke-linecap="round"/>
+  <path d="M190 244L322 214L430 224L405 248L255 272Z" fill="#171c28"/>
+  <path d="M322 214L440 196L492 232L430 272L338 262Z" fill="#E23B2E"/>
+  <path d="M440 196L492 232" stroke="#ffffff" stroke-opacity=".35" stroke-width="3"/>
+  <path d="M168 236L236 224L246 244L186 258Z" fill="#E23B2E"/>
+  <path d="M524 262Q572 238 616 270L606 284Q574 266 534 284Z" fill="#E23B2E"/>
+  <rect x="528" y="232" width="46" height="34" rx="8" fill="#E23B2E" transform="rotate(-18 551 249)"/>
+  <circle cx="545" cy="244" r="6" fill="#fff" opacity=".85"/>
+  <path d="M470 186L520 170" stroke="#10151f" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="523" cy="169" r="7" fill="#10151f"/>
+  <text x="380" y="252" font-family="Arial Black, Arial" font-size="20" font-weight="900" fill="#fff" opacity=".85">YKS</text>
+  <rect x="350" y="342" width="86" height="8" rx="4" fill="#FFC72C" opacity=".9"/>
+</g></svg>

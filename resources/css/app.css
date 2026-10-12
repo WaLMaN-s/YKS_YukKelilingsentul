@@ -1,0 +1,98 @@
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/700.css';
+@import '@fontsource/poppins/800.css';
+@import 'tailwindcss';
+
+@source '../../app/**/*.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+/*
+ * TEMA TERANG ("putih clean")
+ * ---------------------------------------------------------------------------
+ * Skala `navy-*` dipakai ulang sebagai token PERMUKAAN. Dulu makin kecil makin
+ * gelap; sekarang makin kecil makin putih. Karena itu `bg-navy-*`, `from-navy-*`,
+ * dan `to-navy-*` di Blade tidak perlu diubah — nilainya saja yang bergeser.
+ *
+ *   navy-950  latar halaman          (putih)
+ *   navy-900  permukaan halus        (abu sangat muda: footer, section, input)
+ *   navy-800  kartu                  (putih, dibedakan lewat border)
+ *   navy-700  permukaan lebih gelap  (abu muda)
+ *   navy-600  garis/border tebal
+ *
+ * Dua token baru, WAJIB dipakai untuk dua peran yang tidak lagi bisa memakai
+ * warna lama:
+ *
+ *   text-ink        teks gelap di atas tombol kuning. JANGAN pakai text-navy-950,
+ *                   karena navy-950 kini berarti putih.
+ *   text-brand-ink  aksen kuning TUA untuk teks di atas latar putih.
+ *                   `text-brand` (kuning terang) tidak terbaca di atas putih,
+ *                   jadi hanya dipakai sebagai warna ISI (bg), bukan teks.
+ */
+@theme {
+    --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+
+    /* permukaan */
+    --color-navy-950: #ffffff;
+    --color-navy-900: #f8fafc;
+    --color-navy-800: #ffffff;
+    --color-navy-700: #f1f5f9;
+    --color-navy-600: #e2e8f0;
+
+    /* tinta */
+    --color-ink: #0f172a;
+
+    /* aksen */
+    --color-brand: #ffc72c;
+    --color-brand-600: #f2b100;
+    --color-brand-ink: #b45309;
+}
+
+@layer base {
+    html { scroll-behavior: smooth; }
+    body { @apply bg-navy-950 text-slate-700 antialiased; }
+    [x-cloak] { display: none !important; }
+    h1, h2, h3 { @apply text-slate-900; }
+}
+
+@layer components {
+    .container-x { @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8; }
+
+    .btn { @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-ink focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed; }
+    .btn-primary { @apply bg-brand text-ink hover:bg-brand-600 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand/30; }
+    .btn-ghost { @apply border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-100; }
+    .btn-dark { @apply bg-slate-900 text-white hover:bg-slate-800; }
+    .btn-danger { @apply bg-rose-50 text-rose-700 ring-1 ring-rose-200 hover:bg-rose-100; }
+    .btn-success { @apply bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 hover:bg-emerald-100; }
+    .btn-sm { @apply px-3.5 py-1.5 text-xs; }
+
+    .card { @apply rounded-2xl border border-slate-200 bg-white shadow-sm; }
+    .card-pad { @apply p-5 sm:p-6; }
+
+    .label { @apply mb-1.5 block text-sm font-medium text-slate-700; }
+    .input { @apply block w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-brand-ink focus:outline-none focus:ring-2 focus:ring-brand/40; }
+    select.input { @apply pr-8; }
+    .field-error { @apply mt-1 text-xs text-rose-600; }
+    .hint { @apply mt-1 text-xs text-slate-500; }
+
+    .badge { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset; }
+
+    .table-wrap { @apply overflow-x-auto rounded-2xl border border-slate-200; }
+    .table { @apply w-full min-w-[640px] text-left text-sm; }
+    .table thead { @apply bg-slate-50 text-xs text-slate-500; }
+    .table th { @apply px-4 py-3 font-medium; }
+    .table td { @apply px-4 py-3 align-middle; }
+    .table tbody tr { @apply border-t border-slate-100 transition hover:bg-slate-50; }
+
+    .nav-link { @apply relative text-sm font-medium text-slate-600 transition hover:text-brand-ink; }
+    .nav-link.active { @apply text-brand-ink; }
+
+    .side-link { @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900; }
+    .side-link.active { @apply bg-brand text-ink font-semibold; }
+    .side-title { @apply mt-5 mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400; }
+
+    .prose-lite p { @apply mb-3 leading-relaxed text-slate-600; }
+}
