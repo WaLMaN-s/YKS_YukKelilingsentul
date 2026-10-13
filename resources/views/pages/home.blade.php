@@ -154,6 +154,7 @@
                     <div class="p-5">
                         <h3 class="font-semibold">{{ $tour->name }}</h3>
                         <p class="mt-1 flex items-center gap-1 text-xs text-slate-500"><x-icon name="clock" class="size-3.5" /> {{ $tour->duration }} · <x-icon name="map-pin" class="size-3.5" /> {{ $tour->destination }}</p>
+                        @if ($tour->min_participants > 1)<span class="badge mt-2 bg-amber-500/15 text-amber-800 ring-amber-200">Min. {{ $tour->min_participants }} peserta</span>@endif
                         <p class="mt-3 text-lg font-bold text-brand-ink">{{ rupiah($tour->price) }} <span class="text-xs font-normal text-slate-500">/ orang</span></p>
                     </div>
                 </a>

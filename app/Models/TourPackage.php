@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class TourPackage extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'price', 'duration', 'destination', 'description', 'facilities', 'image', 'quota', 'is_active', 'own_motor',
+        'name', 'slug', 'price', 'duration', 'destination', 'description', 'facilities', 'excludes', 'image', 'quota', 'min_participants', 'is_active', 'own_motor',
     ];
 
     protected function casts(): array
     {
-        return ['facilities' => 'array', 'is_active' => 'boolean', 'own_motor' => 'boolean'];
+        return ['facilities' => 'array', 'excludes' => 'array', 'is_active' => 'boolean', 'own_motor' => 'boolean'];
     }
 
     public function bookings(): HasMany

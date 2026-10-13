@@ -17,9 +17,21 @@
         </section>
         <section class="card card-pad">
             <h2 class="text-lg font-bold">Fasilitas</h2>
-            <ul class="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+            @if ($tour->min_participants > 1)
+                <p class="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-500/15 px-3 py-1.5 text-sm font-medium text-amber-800 ring-1 ring-amber-200">
+                    <x-icon name="users" class="size-4" /> Ketentuan: minimal {{ $tour->min_participants }} peserta
+                </p>
+            @endif
+            <p class="mt-4 text-sm font-semibold text-slate-700">Sudah termasuk (include)</p>
+            <ul class="mt-2 grid gap-2 text-sm sm:grid-cols-2">
                 @foreach ($tour->facilities ?? [] as $f)<li class="flex items-center gap-2"><x-icon name="check" class="size-4 text-emerald-600" />{{ $f }}</li>@endforeach
             </ul>
+            @if (! empty($tour->excludes))
+                <p class="mt-5 text-sm font-semibold text-slate-700">Belum termasuk (exclude)</p>
+                <ul class="mt-2 grid gap-2 text-sm sm:grid-cols-2">
+                    @foreach ($tour->excludes as $e)<li class="flex items-center gap-2 text-slate-500"><x-icon name="x" class="size-4 text-rose-500" />{{ $e }}</li>@endforeach
+                </ul>
+            @endif
         </section>
         <section>
             <h2 class="mb-3 text-lg font-bold">Jadwal Keberangkatan</h2>

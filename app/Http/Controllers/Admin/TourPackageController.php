@@ -24,8 +24,10 @@ class TourPackageController extends CrudController
             'destination' => ['label' => 'Destinasi', 'type' => 'text', 'rules' => 'nullable|max:200'],
             'own_motor' => ['label' => 'Paket bawa motor pribadi', 'type' => 'checkbox', 'list' => true, 'hint' => 'Peserta membawa motor sendiri (tanpa sewa motor).'],
             'quota' => ['label' => 'Kuota per jadwal', 'type' => 'number', 'rules' => 'required|integer|min:1', 'list' => true],
+            'min_participants' => ['label' => 'Minimal peserta', 'type' => 'number', 'rules' => 'required|integer|min:1', 'default' => 1, 'hint' => 'Ketentuan jumlah peserta minimal per pemesanan.'],
             'description' => ['label' => 'Deskripsi', 'type' => 'textarea', 'rules' => 'nullable|max:3000'],
-            'facilities' => ['label' => 'Fasilitas', 'type' => 'lines', 'hint' => 'Satu fasilitas per baris.'],
+            'facilities' => ['label' => 'Fasilitas (include)', 'type' => 'lines', 'hint' => 'Satu fasilitas per baris.'],
+            'excludes' => ['label' => 'Belum termasuk (exclude)', 'type' => 'lines', 'hint' => 'Satu item per baris, tanpa tanda baca tambahan.'],
             'image' => ['label' => 'Foto', 'type' => 'image'],
             'is_active' => ['label' => 'Aktif', 'type' => 'checkbox', 'list' => true],
         ];

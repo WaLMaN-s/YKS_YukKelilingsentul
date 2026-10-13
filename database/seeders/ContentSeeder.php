@@ -22,18 +22,29 @@ class ContentSeeder extends Seeder
             'starts_at' => now()->startOfMonth(), 'ends_at' => now()->addMonth()->endOfMonth(), 'quota' => 50, 'used' => 0, 'is_active' => true,
         ]);
 
-        // [nama, harga/orang, durasi, destinasi, gambar, fasilitas, bawa motor pribadi]
-        $packs = [
-            ['Paket Keliling Gunung Pancar', 350000, '1 Hari', 'Jalur hutan pinus & bukit Gunung Pancar', 'tour-sentul', ['Motor trail', 'Helm & perlengkapan', 'Guide berpengalaman', 'Dokumentasi foto', 'BBM', 'Makan siang'], false],
-            ['Paket Keliling + Curug', 500000, '1 Hari', 'Gunung Pancar + Curug', 'tour-sunrise', ['Motor trail', 'Helm & perlengkapan', 'Guide berpengalaman', 'Tiket curug', 'Dokumentasi foto', 'BBM', 'Makan siang'], false],
-            ['Paket Adventure Offroad', 550000, '1 Hari', 'Jalur offroad menantang & sungai kecil', 'tour-adventure', ['Motor trail', 'Helm & perlengkapan lengkap', 'Guide profesional', 'Dokumentasi foto & video', 'BBM', 'Makan siang', 'Asuransi perjalanan'], false],
-            ['Paket Bawa Motor Pribadi', 150000, '1 Hari', 'Gunung Pancar (motor milik sendiri)', 'tour-adventure', ['Guide berpengalaman', 'Rute offroad Gunung Pancar', 'Dokumentasi foto', 'Akses basecamp (toilet, musola, parkir)'], true],
+        // Fasilitas (include) dan hal yang belum termasuk (exclude) berlaku untuk semua paket.
+        $facilities = [
+            'Guide / Leader', 'BBM sesuai rute', 'Helm + sepatu safety', 'Jersey set (dipinjamkan)',
+            'Jalur trabas', 'Air mineral 600ml', 'Dokumentasi (HP)',
         ];
-        foreach ($packs as [$name, $price, $duration, $dest, $img, $fac, $own]) {
+        $excludes = ['Baju ganti', 'Tas wadah minum', 'Sarung tangan', 'Uang cash', 'Tipping guide / leader'];
+
+        // [nama, harga/orang, minimal peserta, destinasi, gambar, bawa motor pribadi]
+        $packs = [
+            ['Paket Trail 150 CC', 700000, 2, 'Jalur trabas Gunung Pancar', 'tour-sentul', false],
+            ['Paket Trail KLX 140 CC', 1300000, 1, 'Jalur trabas Gunung Pancar', 'tour-sunrise', false],
+            ['Paket Trail 300 CC', 2400000, 1, 'Jalur trabas Gunung Pancar', 'tour-adventure', false],
+        ];
+
+        // Buang paket lama yang tidak lagi ditawarkan (mis. dari seed sebelumnya).
+        TourPackage::whereNotIn('slug', array_map(fn ($p) => Str::slug($p[0]), $packs))->delete();
+
+        foreach ($packs as [$name, $price, $minPeople, $dest, $img, $own]) {
             $pack = TourPackage::updateOrCreate(['slug' => Str::slug($name)], [
-                'name' => $name, 'price' => $price, 'duration' => $duration, 'destination' => $dest,
+                'name' => $name, 'price' => $price, 'duration' => '1 Hari', 'destination' => $dest,
                 'description' => "{$name}: nikmati rute terbaik Sentul bersama guide lokal yang hafal setiap jalur. Cocok untuk pemula maupun rider berpengalaman. Tidak ada jadwal open trip yang cocok? Pilih Private Trip di tanggal Anda.",
-                'facilities' => $fac, 'image' => "images/tours/{$img}.svg", 'quota' => 8, 'is_active' => true, 'own_motor' => $own,
+                'facilities' => $facilities, 'excludes' => $excludes, 'image' => "images/tours/{$img}.svg",
+                'quota' => 8, 'min_participants' => $minPeople, 'is_active' => true, 'own_motor' => $own,
             ]);
             $pack->schedules()->delete();
             foreach ([3, 7, 10, 14, 21] as $d) {

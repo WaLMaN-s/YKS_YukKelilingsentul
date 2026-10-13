@@ -12,6 +12,7 @@
             <div class="p-5">
                 <h2 class="text-lg font-semibold"><a href="{{ route('tours.show', $tour->slug) }}" class="hover:text-brand-ink">{{ $tour->name }}</a></h2>
                 @if ($tour->own_motor)<span class="badge mt-1 bg-sky-500/15 text-sky-700 ring-sky-200">Bawa motor pribadi</span>@endif
+                @if ($tour->min_participants > 1)<span class="badge mt-1 bg-amber-500/15 text-amber-800 ring-amber-200">Min. {{ $tour->min_participants }} peserta</span>@endif
                 <p class="mt-1 flex items-center gap-1.5 text-xs text-slate-500"><x-icon name="clock" class="size-3.5" /> {{ $tour->duration }} · {{ $tour->upcoming_schedules ? $tour->upcoming_schedules.' jadwal open trip' : 'Private trip kapan saja' }}</p>
                 <ul class="mt-3 space-y-1 text-sm text-slate-600">
                     @foreach (array_slice($tour->facilities ?? [], 0, 4) as $f)<li class="flex items-center gap-2"><x-icon name="check" class="size-4 text-emerald-600" />{{ $f }}</li>@endforeach
