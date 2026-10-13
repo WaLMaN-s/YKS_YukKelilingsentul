@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; color: #1f2937; line-height: 1.55; max-width: 920px; margin: 32px auto; padding: 0 24px; }
+h1 { font-size: 25px; border-bottom: 3px solid #f59e0b; padding-bottom: 8px; }
+h2 { font-size: 19px; margin-top: 28px; border-bottom: 1px solid #d1d5db; padding-bottom: 4px; color: #111827; }
+h3 { font-size: 15.5px; margin-top: 20px; color: #374151; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 12.5px; }
+th, td { border: 1px solid #cbd5e1; padding: 6px 9px; text-align: left; vertical-align: top; }
+th { background: #f3f4f6; }
+code { background: #f3f4f6; padding: 1px 4px; border-radius: 4px; font-family: Consolas, monospace; font-size: 11.5px; }
+blockquote { border-left: 4px solid #f59e0b; margin: 8px 0; padding: 4px 12px; color: #4b5563; background: #fffbeb; }
+hr { border: none; border-top: 1px solid #d1d5db; margin: 20px 0; }
+.meta td { border: none; padding: 2px 8px 2px 0; }
+</style>
+</head>
+<body>
+
+<h1>Dokumen Spesifikasi Kebutuhan Perangkat Lunak (SRS)<br>Yuk Keliling Sentul — Website Rental Motor</h1>
+
+<table class="meta">
+<tr><td><strong>Nama Produk</strong></td><td>Yuk Keliling Sentul — Website Rental Motor</td></tr>
+<tr><td><strong>Versi Dokumen</strong></td><td>1.0</td></tr>
+<tr><td><strong>Tanggal</strong></td><td>2026-10-12</td></tr>
+<tr><td><strong>Status</strong></td><td>Draf untuk review</td></tr>
+<tr><td><strong>Standar Acuan</strong></td><td>IEEE 830 (disesuaikan)</td></tr>
+</table>
+
+<hr>
+
+<h2>1. Pendahuluan</h2>
+
+<h3>1.1 Tujuan</h3>
+<p>Dokumen ini menjabarkan kebutuhan perangkat lunak untuk <strong>Yuk Keliling Sentul</strong>, sebuah platform penyewaan motor trail, jeep, dan paket wisata di kawasan Gunung Pancar, Sentul. Tujuan dokumen adalah:</p>
+<ol>
+<li>Menjadi acuan bersama antara pengembang, pemilik usaha, dan pengguna dalam memahami fungsi serta batasan sistem.</li>
+<li>Mendefinisikan kebutuhan fungsional dan non-fungsional secara terukur dan dapat diuji.</li>
+<li>Menjadi dasar verifikasi pada saat pengujian dan penerimaan (acceptance).</li>
+</ol>
+
+<h3>1.2 Ruang Lingkup</h3>
+<p>Sistem yang dijelaskan mencakup:</p>
+<ul>
+<li><strong>Situs publik</strong> (front office): katalog motor, paket wisata, galeri, informasi umum, pendaftaran/login, dan alur pemesanan oleh pelanggan.</li>
+<li><strong>Dashboard pelanggan</strong>: profil, riwayat pemesanan, pembayaran, ulasan, dan notifikasi.</li>
+<li><strong>Panel administrasi</strong> (back office): pengelolaan armada, penyewaan, pembayaran, pelanggan, paket wisata, promo, galeri, ulasan, laporan, pengaturan, dan pengguna admin.</li>
+<li><strong>Mekanisme pendukung</strong>: notifikasi internal, pengingat terjadwal, penyimpanan berkas sensitif, serta ekspor laporan.</li>
+</ul>
+<p>Di luar ruang lingkup: integrasi gateway pembayaran online (pembayaran dilakukan dengan transfer manual + konfirmasi admin), pengiriman email produksi (saat ini <code>MAIL_MAILER=log</code>), dan aplikasi mobile native.</p>
+
+<h3>1.3 Definisi, Akronim, dan Singkatan</h3>
+<table>
+<tr><th>Istilah</th><th>Kepanjangan / Arti</th></tr>
+<tr><td>SRS</td><td>Software Requirements Specification</td></tr>
+<tr><td>Admin</td><td>Pengguna panel belakang (super admin, admin operasional, kasir, staff)</td></tr>
+<tr><td>Customer / Pelanggan</td><td>Pengguna akhir yang menyewa/memesan</td></tr>
+<tr><td>Armada</td><td>Unit motor trail dan jeep yang disewakan</td></tr>
+<tr><td>Add-on</td><td>Layanan tambahan (sepatu, guide, protector)</td></tr>
+<tr><td>Open Trip</td><td>Wisata gabungan mengikuti jadwal yang tersedia</td></tr>
+<tr><td>Private Trip</td><td>Wisata privat dengan tanggal bebas</td></tr>
+<tr><td>DP</td><td>Down Payment / uang muka (untuk pesanan manual WA/IG)</td></tr>
+<tr><td>H-2</td><td>Dua hari sebelum hari pemakaian</td></tr>
+<tr><td>Forfeit</td><td>Uang hangus (pembatalan pada/after hari H)</td></tr>
+<tr><td>KTP / SIM</td><td>Dokumen identitas yang diunggah pelanggan</td></tr>
+<tr><td>WA / IG</td><td>WhatsApp / Instagram (sumber pesanan manual)</td></tr>
+<tr><td>Policy</td><td>Aturan otorisasi Laravel (siapa boleh mengakses apa)</td></tr>
+</table>
+
+<h3>1.4 Referensi</h3>
+<ol>
+<li>IEEE Std 830-1998 — <em>Recommended Practice for Software Requirements Specifications</em>.</li>
+<li>Dokumentasi Laravel 12 — https://laravel.com/docs</li>
+<li>Dokumentasi Tailwind CSS 4 — https://tailwindcss.com/docs</li>
+<li>Dokumentasi Alpine.js — https://alpinejs.dev</li>
+<li><code>README.md</code> proyek (data contoh, instalasi, aturan bisnis).</li>
+<li>Kode sumber: <code>routes/web.php</code>, <code>config/permissions.php</code>, <code>app/Services/*</code>, <code>app/Policies/*</code>.</li>
+</ol>
+
+<h3>1.5 Gambaran Umum Dokumen</h3>
+<ul>
+<li><strong>Bagian 2</strong> menjelaskan perspektif, fungsi, pengguna, batasan, serta anggapan/ketergantungan produk.</li>
+<li><strong>Bagian 3</strong> memuat kebutuhan fungsional (FR) yang terperinci per modul.</li>
+<li><strong>Bagian 4</strong> memuat kebutuhan non-fungsional.</li>
+<li><strong>Bagian 5</strong> memuat antarmuka pengguna dan antarmuka sistem.</li>
+<li><strong>Bagian 6</strong> memuat kebutuhan perangkat keras dan lunak.</li>
+<li><strong>Bagian 7</strong> memuat kriteria penerimaan.</li>
+<li><strong>Bagian 8</strong> memuat rencana penjadwalan.</li>
+<li><strong>Bagian 9</strong> memuat lampiran (akun default, ringkasan data contoh, peta modul).</li>
+</ul>
+
+<hr>
+
+<h2>2. Deskripsi Umum</h2>
+
+<h3>2.1 Perspektif Produk</h3>
+<p>Yuk Keliling Sentul adalah aplikasi web <strong>monolitik</strong> berbasis Laravel 12 dengan tampilan server-rendered (Blade), styling Tailwind CSS 4, dan interaktivitas Alpine.js. Aset frontend dikompilasi dengan Vite. Data disimpan di MySQL/MariaDB. Seluruh antarmuka berbahasa Indonesia dengan tema gelap dan aksen kuning sesuai identitas visual Yuk Keliling Sentul.</p>
+<p>Produk ini menggantikan proses pemesanan manual (telepon/WhatsApp) menjadi alur daring yang tetap mempertahankan konfirmasi manusia untuk pembayaran dan pengambilan kendaraan.</p>
+
+<h3>2.2 Fungsi Produk</h3>
+<ol>
+<li>Menampilkan katalog motor trail dan jeep beserta detail, stok, dan harga.</li>
+<li>Menampilkan paket wisata beserta jadwal open trip.</li>
+<li>Memproses pemesanan sewa kendaraan dengan kalkulasi harga dan cek ketersediaan.</li>
+<li>Memproses pemesanan wisata (open trip dan private trip).</li>
+<li>Mengelola pembayaran transfer dengan verifikasi admin.</li>
+<li>Menyediakan dashboard pelanggan untuk memantau pesanan dan mengunggah bukti.</li>
+<li>Menyediakan panel admin untuk operasional (armada, penyewaan, pembayaran, pelanggan, wisata, konten, laporan, dan pengaturan).</li>
+<li>Memberi notifikasi internal dan pengingat otomatis (hampir selesai / terlambat kembali).</li>
+</ol>
+
+<h3>2.3 Pengguna yang Diharapkan</h3>
+<table>
+<tr><th>Peran</th><th>Deskripsi</th><th>Akses Utama</th></tr>
+<tr><td><strong>Super Admin</strong></td><td>Pemilik / pengelola tertinggi</td><td>Semua modul, termasuk Pengaturan dan Admin Users</td></tr>
+<tr><td><strong>Admin (operasional)</strong></td><td>Mengelola operasional harian</td><td>Dashboard, motor, penyewaan, pickup, return, pembayaran, customer, promo, review, galeri, wisata, laporan</td></tr>
+<tr><td><strong>Kasir</strong></td><td>Mengelola pembayaran</td><td>Dashboard, penyewaan, pembayaran, return</td></tr>
+<tr><td><strong>Staff</strong></td><td>Mengelola unit &amp; armada</td><td>Dashboard, motor, pickup, return</td></tr>
+<tr><td><strong>Customer</strong></td><td>Penyewa / pemesan</td><td>Situs publik, booking, dashboard pelanggan</td></tr>
+</table>
+<blockquote>Pemetaan hak akses detail tersedia pada Lampiran 9.3.</blockquote>
+
+<h3>2.4 Batasan</h3>
+<ol>
+<li>Tidak ada integrasi gateway pembayaran daring; seluruh pembayaran via transfer dan diverifikasi manual oleh admin.</li>
+<li>Pengiriman email produksi belum aktif (menggunakan log driver); notifikasi berjalan di dalam aplikasi.</li>
+<li>Pembayaran di website bersifat <strong>lunas penuh</strong>; DP hanya berlaku untuk pesanan manual WA/IG.</li>
+<li>Perubahan jadwal oleh pelanggan maksimal <strong>H-2</strong> (nilai dapat diubah di Pengaturan).</li>
+<li>Pembatalan pada/after hari H menyebabkan dana hangus (<code>forfeited</code>).</li>
+<li>Kerusakan selama pemakaian ditanggung pengguna dan dipotong dari deposit saat pengembalian.</li>
+<li>Berkas identitas (KTP/SIM/bukti bayar) dibatasi ukuran 3–4 MB dan disimpan privat.</li>
+<li>Aplikasi ditujukan untuk satu penyedia (single-tenant); tidak multi-cabang.</li>
+</ol>
+
+<h3>2.5 Anggapan dan Ketergantungan</h3>
+<ol>
+<li>Ketersediaan server web (Nginx/Apache) dan cron untuk penjadwalan pengingat.</li>
+<li>Ketersediaan MySQL 8 / MariaDB 10.6+ dengan kredensial yang dikonfigurasi di <code>.env</code>.</li>
+<li>Admin memiliki nomor WhatsApp aktif untuk kontak dan pesanan manual.</li>
+<li>Harga dan data contoh (seed) adalah nilai awal dan akan disesuaikan oleh admin.</li>
+<li>Pengguna memiliki browser modern yang mendukung JavaScript (untuk Alpine.js).</li>
+</ol>
+
+<hr>
+
+<h2>3. Kebutuhan Fungsional</h2>
+<p>Kebutuhan fungsional ditulis dengan format <strong>FR-XX</strong> dan dikelompokkan per modul. Prioritas: <strong>W</strong> = Wajib, <strong>P</strong> = Penting, <strong>O</strong> = Opsional.</p>
+
+<h3>3.1 Situs Publik</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-01</td><td>Sistem menampilkan beranda dengan informasi utama dan fasilitas basecamp.</td><td>W</td></tr>
+<tr><td>FR-02</td><td>Sistem menampilkan katalog motor (<code>/motor</code>) dan detail per motor (<code>/motor/{slug}</code>) beserta gambar, spesifikasi, stok, dan harga.</td><td>W</td></tr>
+<tr><td>FR-03</td><td>Sistem menampilkan katalog paket wisata (<code>/paket-wisata</code>) dan detailnya.</td><td>W</td></tr>
+<tr><td>FR-04</td><td>Sistem menampilkan halaman galeri, tentang kami, kontak, dan FAQ.</td><td>W</td></tr>
+<tr><td>FR-05</td><td>Sistem menyediakan <code>sitemap.xml</code>.</td><td>O</td></tr>
+<tr><td>FR-06</td><td>Sistem menampilkan konten dengan tema gelap + aksen kuning, responsif.</td><td>W</td></tr>
+</table>
+
+<h3>3.2 Autentikasi</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-07</td><td>Pengunjung dapat mendaftar akun (<code>/register</code>).</td><td>W</td></tr>
+<tr><td>FR-08</td><td>Pengunjung dapat login (<code>/login</code>) dengan rate limit 6 percobaan/menit.</td><td>W</td></tr>
+<tr><td>FR-09</td><td>Pengguna dapat logout.</td><td>W</td></tr>
+<tr><td>FR-10</td><td>Hanya pengguna <strong>aktif</strong> (tidak diblokir) yang dapat mengakses area pelanggan.</td><td>W</td></tr>
+<tr><td>FR-11</td><td>Pendaftaran dibatasi rate limit 10/menit untuk mencegah spam.</td><td>P</td></tr>
+</table>
+
+<h3>3.3 Pemesanan Sewa Kendaraan</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-12</td><td>Pelanggan dapat membuat pemesanan sewa (<code>/booking</code>) dan menghitung estimasi harga (<code>/booking/quote</code>).</td><td>W</td></tr>
+<tr><td>FR-13</td><td>Sistem menolak pemesanan bila stok tidak mencukupi pada rentang tanggal (overbooking ditolak).</td><td>W</td></tr>
+<tr><td>FR-14</td><td>Pelanggan dapat memesan beberapa unit sekaligus dalam satu booking.</td><td>W</td></tr>
+<tr><td>FR-15</td><td>Sistem menghitung harga berdasarkan durasi, model, paket, dan add-on.</td><td>W</td></tr>
+<tr><td>FR-16</td><td>Pelanggan dapat memilih add-on (sepatu, guide, protector).</td><td>P</td></tr>
+<tr><td>FR-17</td><td>Checkout menghasilkan data penyewaan (rental) dengan status awal menunggu pembayaran.</td><td>W</td></tr>
+<tr><td>FR-18</td><td>Pelanggan melihat halaman pembayaran dan mengunggah bukti transfer.</td><td>W</td></tr>
+</table>
+
+<h3>3.4 Pemesanan Wisata</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-19</td><td>Pelanggan dapat memesan paket wisata open trip dengan kuota otomatis dari jadwal.</td><td>W</td></tr>
+<tr><td>FR-20</td><td>Pelanggan dapat memesan private trip dengan tanggal bebas (minimal H+1).</td><td>W</td></tr>
+<tr><td>FR-21</td><td>Pelanggan dapat mengunggah bukti pembayaran untuk booking wisata.</td><td>W</td></tr>
+<tr><td>FR-22</td><td>Pelanggan dapat mengajukan perubahan jadwal (maksimal H-2).</td><td>P</td></tr>
+<tr><td>FR-23</td><td>Pelanggan dapat membatalkan booking wisata; pembatalan pada/after H ditandai forfeited.</td><td>P</td></tr>
+<tr><td>FR-24</td><td>Sistem membedakan paket dengan tanda "bawa motor pribadi" (tanpa sewa motor).</td><td>P</td></tr>
+</table>
+
+<h3>3.5 Dashboard Pelanggan</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-25</td><td>Pelanggan melihat ringkasan akun dan riwayat pemesanan.</td><td>W</td></tr>
+<tr><td>FR-26</td><td>Pelanggan dapat mengubah profil (nama, kontak, dll.).</td><td>W</td></tr>
+<tr><td>FR-27</td><td>Pelanggan melihat detail booking sewa dan mengajukan perubahan jadwal / pembatalan.</td><td>W</td></tr>
+<tr><td>FR-28</td><td>Pelanggan melihat riwayat pembayaran.</td><td>W</td></tr>
+<tr><td>FR-29</td><td>Pelanggan dapat menulis ulasan untuk penyewaan yang selesai.</td><td>W</td></tr>
+<tr><td>FR-30</td><td>Pelanggan melihat notifikasi dan menandai sudah dibaca.</td><td>W</td></tr>
+<tr><td>FR-31</td><td>Pelanggan dapat mengakses berkas privat miliknya (KTP/SIM/bukti) melalui route terproteksi.</td><td>W</td></tr>
+</table>
+
+<h3>3.6 Admin — Armada dan Katalog</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-32</td><td>Admin mengelola data motor (CRUD) dan mengubah status ketersediaan.</td><td>W</td></tr>
+<tr><td>FR-33</td><td>Admin mengelola foto motor (unggah, hapus, jadikan utama).</td><td>W</td></tr>
+<tr><td>FR-34</td><td>Admin mengelola kategori motor, lokasi, paket kendaraan, dan add-on.</td><td>W</td></tr>
+<tr><td>FR-35</td><td>Admin mengelola stok per model kendaraan.</td><td>W</td></tr>
+</table>
+
+<h3>3.7 Admin — Penyewaan</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-36</td><td>Admin melihat daftar dan detail penyewaan.</td><td>W</td></tr>
+<tr><td>FR-37</td><td>Admin dapat mencatat pesanan manual (sumber WA/IG/langsung) dengan status DP/lunas/belum bayar.</td><td>W</td></tr>
+<tr><td>FR-38</td><td>Admin dapat mengonfirmasi, membatalkan, dan menyelesaikan penyewaan.</td><td>W</td></tr>
+<tr><td>FR-39</td><td>Admin dapat menandai "siap diambil" dan "diambil" pada proses pengambilan.</td><td>W</td></tr>
+<tr><td>FR-40</td><td>Admin memproses pengembalian, mencatat kerusakan, dan memotong deposit.</td><td>W</td></tr>
+</table>
+
+<h3>3.8 Admin — Pembayaran</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-41</td><td>Admin memverifikasi, menolak, dan merefund pembayaran.</td><td>W</td></tr>
+<tr><td>FR-42</td><td>Admin mengelola metode pembayaran (bank/ewallet, nomor tujuan).</td><td>W</td></tr>
+<tr><td>FR-43</td><td>Pelunasan DP dicatat sebagai pembayaran terpisah dan diverifikasi manual.</td><td>P</td></tr>
+</table>
+
+<h3>3.9 Admin — Pelanggan</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-44</td><td>Admin melihat daftar dan detail pelanggan.</td><td>W</td></tr>
+<tr><td>FR-45</td><td>Admin mengubah data pelanggan.</td><td>P</td></tr>
+<tr><td>FR-46</td><td>Admin dapat memblokir/mengaktifkan kembali pelanggan.</td><td>W</td></tr>
+</table>
+
+<h3>3.10 Admin — Wisata</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-47</td><td>Admin melihat daftar booking wisata dan detailnya.</td><td>W</td></tr>
+<tr><td>FR-48</td><td>Admin memverifikasi, menolak, menyelesaikan, dan membatalkan booking wisata.</td><td>W</td></tr>
+<tr><td>FR-49</td><td>Admin mengelola paket wisata dan jadwal wisata (CRUD).</td><td>W</td></tr>
+</table>
+
+<h3>3.11 Admin — Konten, Laporan, dan Pengaturan</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-50</td><td>Admin mengelola promo (CRUD) dengan batas minimum, maksimum, kuota.</td><td>W</td></tr>
+<tr><td>FR-51</td><td>Admin mengelola galeri (CRUD).</td><td>W</td></tr>
+<tr><td>FR-52</td><td>Admin memoderasi ulasan (setujui/tolak/hapus).</td><td>W</td></tr>
+<tr><td>FR-53</td><td>Admin melihat laporan dan mengekspor data laporan.</td><td>W</td></tr>
+<tr><td>FR-54</td><td>Admin (super) mengelola pengaturan global (nomor WhatsApp, persentase DP, batas H-2, fasilitas basecamp).</td><td>W</td></tr>
+<tr><td>FR-55</td><td>Admin (super) mengelola akun admin/staff/kasir (Admin Users).</td><td>W</td></tr>
+</table>
+
+<h3>3.12 Notifikasi dan Berkas</h3>
+<table>
+<tr><th>ID</th><th>Kebutuhan</th><th>Prioritas</th></tr>
+<tr><td>FR-56</td><td>Sistem membuat notifikasi internal untuk kejadian penting (booking, pembayaran, pengembalian).</td><td>W</td></tr>
+<tr><td>FR-57</td><td>Sistem mengirim pengingat otomatis rental hampir selesai dan pengembalian terlambat (cron harian 08:00).</td><td>W</td></tr>
+<tr><td>FR-58</td><td>Berkas sensitif disimpan di <code>storage/app/private</code> dan hanya diakses lewat route <code>/berkas/...</code> setelah lolos policy.</td><td>W</td></tr>
+</table>
+
+<hr>
+
+<h2>4. Kebutuhan Non-Fungsional</h2>
+
+<h3>4.1 Kinerja</h3>
+<ul>
+<li><strong>NFR-P-01</strong>: Halaman katalog dan detail harus dapat dimuat dalam kondisi normal di bawah 3 detik pada server spesifikasi minimum (Bagian 6.1).</li>
+<li><strong>NFR-P-02</strong>: Endpoint sensitif dibatasi rate limit: login 6/menit, register 10/menit, quote 60/menit.</li>
+<li><strong>NFR-P-03</strong>: Sistem memanfaatkan cache dan optimasi (<code>config:cache</code>, <code>route:cache</code>, <code>view:cache</code>) pada mode produksi.</li>
+<li><strong>NFR-P-04</strong>: Ukuran unggahan berkas identitas dibatasi 3–4 MB.</li>
+</ul>
+
+<h3>4.2 Keamanan</h3>
+<ul>
+<li><strong>NFR-S-01</strong>: Seluruh kata sandi disimpan dalam bentuk hash (bcrypt), bukan plaintext.</li>
+<li><strong>NFR-S-02</strong>: Seluruh akses area pelanggan dan admin memerlukan autentikasi.</li>
+<li><strong>NFR-S-03</strong>: Otorisasi berbasis role-permission (<code>config/permissions.php</code>) dan policy (<code>CustomerPolicy</code>, <code>RentalPolicy</code>, <code>TourBookingPolicy</code>).</li>
+<li><strong>NFR-S-04</strong>: Berkas sensitif (KTP/SIM/bukti bayar) tidak dapat diakses via URL publik.</li>
+<li><strong>NFR-S-05</strong>: NIK/SIM dienkripsi menggunakan application key (data invalid bila key berubah).</li>
+<li><strong>NFR-S-06</strong>: Form dilindungi CSRF dan input divalidasi server-side.</li>
+<li><strong>NFR-S-07</strong>: Konfigurasi rahasia disimpan di <code>.env</code> dan tidak di-commit ke repositori.</li>
+<li><strong>NFR-S-08</strong>: HTTPS wajib pada deployment produksi.</li>
+</ul>
+
+<h3>4.3 Keandalan</h3>
+<ul>
+<li><strong>NFR-R-01</strong>: Pencatatan booking dilakukan dalam transaksi database untuk mencegah data parsial.</li>
+<li><strong>NFR-R-02</strong>: Pengingat otomatis dijalankan melalui scheduler Laravel dengan cron <code>schedule:run</code>.</li>
+<li><strong>NFR-R-03</strong>: Log aplikasi tercatat di <code>storage/logs</code> untuk penelusuran masalah.</li>
+<li><strong>NFR-R-04</strong>: Sistem mendukung <code>php artisan migrate</code> dan <code>migrate:fresh --seed</code> untuk pemulihan instalasi.</li>
+</ul>
+
+<h3>4.4 Usability</h3>
+<ul>
+<li><strong>NFR-U-01</strong>: Seluruh UI berbahasa Indonesia.</li>
+<li><strong>NFR-U-02</strong>: Tampilan konsisten dengan identitas Yuk Keliling Sentul (tema gelap + aksen kuning).</li>
+<li><strong>NFR-U-03</strong>: Tampilan responsif untuk perangkat desktop dan seluler.</li>
+<li><strong>NFR-U-04</strong>: Alur booking harus jelas (pilih → cek harga → checkout → bayar → unggah bukti).</li>
+<li><strong>NFR-U-05</strong>: Pesan validasi dan error ditampilkan dalam bahasa Indonesia.</li>
+</ul>
+
+<hr>
+
+<h2>5. Antarmuka</h2>
+
+<h3>5.1 Antarmuka Pengguna</h3>
+<p>Antarmuka pengguna dirender server-side menggunakan Blade dan distyling dengan Tailwind CSS 4, dengan interaktivitas ringan via Alpine.js. Halaman utama meliputi:</p>
+<ul>
+<li><strong>Publik</strong>: beranda, katalog motor, detail motor, paket wisata, detail wisata, galeri, tentang kami, kontak, FAQ, login, register.</li>
+<li><strong>Pelanggan</strong>: dashboard (profil, booking, wisata, pembayaran, ulasan, notifikasi), halaman booking/checkout, halaman pembayaran.</li>
+<li><strong>Admin</strong>: dashboard ringkasan, modul motor, penyewaan, pembayaran, customer, wisata, promo, galeri, review, laporan, pengaturan, admin users.</li>
+</ul>
+
+<h3>5.2 Antarmuka Sistem</h3>
+<table>
+<tr><th>Antarmuka</th><th>Deskripsi</th></tr>
+<tr><td>Basis data</td><td>MySQL 8 / MariaDB 10.6+ melalui Laravel Eloquent (PDO)</td></tr>
+<tr><td>Penyimpanan file</td><td>Disk lokal Laravel: <code>public</code> (gambar produk) dan <code>private</code> (dokumen identitas)</td></tr>
+<tr><td>Email</td><td>Driver <code>MAIL_MAILER=log</code> (belum mengirim sungguhan)</td></tr>
+<tr><td>Penjadwalan</td><td>Laravel Scheduler via cron sistem (<code>php artisan schedule:run</code>)</td></tr>
+<tr><td>Kontak eksternal</td><td>Nomor WhatsApp yang dikonfigurasi di Pengaturan (tautan kontak)</td></tr>
+<tr><td>Aset frontend</td><td>Vite (<code>npm run build</code> / <code>npm run dev</code>)</td></tr>
+</table>
+
+<hr>
+
+<h2>6. Kebutuhan Sistem</h2>
+
+<h3>6.1 Perangkat Keras</h3>
+<ul>
+<li><strong>Server minimum</strong>: 1 vCPU, 1 GB RAM, 20 GB storage (untuk volume trafik kecil-menengah).</li>
+<li><strong>Storage</strong>: menyesuaikan jumlah gambar armada/galeri dan dokumen pelanggan; disarankan mulai 10 GB untuk media.</li>
+<li><strong>Klien</strong>: perangkat dengan browser modern (Chrome/Firefox/Safari/Edge).</li>
+</ul>
+<blockquote>Spesifikasi produksi final menyesuaikan estimasi trafik dan jumlah data pelanggan.</blockquote>
+
+<h3>6.2 Perangkat Lunak</h3>
+<table>
+<tr><th>Komponen</th><th>Versi / Catatan</th></tr>
+<tr><td>PHP</td><td>8.2+ (ekstensi: mbstring, xml, curl, zip, fileinfo, pdo_mysql, openssl; gd/imagick opsional)</td></tr>
+<tr><td>Composer</td><td>2.x</td></tr>
+<tr><td>Node.js + NPM</td><td>Node 20.19+ / 22+</td></tr>
+<tr><td>Database</td><td>MySQL 8 / MariaDB 10.6+</td></tr>
+<tr><td>Web server</td><td>Nginx atau Apache (document root ke <code>public/</code>)</td></tr>
+<tr><td>Framework</td><td>Laravel 12</td></tr>
+<tr><td>Frontend</td><td>Blade, Tailwind CSS 4, Alpine.js, Vite</td></tr>
+<tr><td>Scheduler</td><td>Cron sistem untuk <code>php artisan schedule:run</code></td></tr>
+</table>
+
+<hr>
+
+<h2>7. Kriteria Penerimaan</h2>
+<p>Sistem dinyatakan <strong>diterima</strong> apabila seluruh butir berikut terpenuhi dan terverifikasi:</p>
+<ol>
+<li><strong>AC-01</strong> — Seluruh kebutuhan fungsional berprioritas <strong>Wajib</strong> (W) berjalan sesuai spesifikasi pada Bagian 3.</li>
+<li><strong>AC-02</strong> — Pengujian otomatis (PHPUnit, SQLite in-memory) lulus tanpa kegagalan (<code>php artisan test</code>).</li>
+<li><strong>AC-03</strong> — Seluruh alur kunci teruji end-to-end: registrasi/login, booking sewa, booking wisata, unggah bukti, verifikasi admin, pengambilan, dan pengembalian.</li>
+<li><strong>AC-04</strong> — Overbooking tertolak dan stok terjaga konsisten saat pemesanan paralel.</li>
+<li><strong>AC-05</strong> — Akses tanpa izin (role/permission/policy) tertolak, termasuk akses berkas privat.</li>
+<li><strong>AC-06</strong> — Tidak ada rahasia (<code>.env</code>, kredensial) yang tersimpan di repositori.</li>
+<li><strong>AC-07</strong> — Pengingat otomatis berjalan sesuai jadwal dan menghasilkan notifikasi yang benar.</li>
+<li><strong>AC-08</strong> — Seluruh UI berbahasa Indonesia, responsif, dan sesuai tema visual.</li>
+<li><strong>AC-09</strong> — Kriteria non-fungsional pada Bagian 4 terpenuhi (rate limit, ukuran unggah, hash password, HTTPS produksi).</li>
+<li><strong>AC-10</strong> — Dokumentasi instalasi dan operasional (<code>README.md</code>) akurat dan dapat dijalankan.</li>
+</ol>
+
+<hr>
+
+<h2>8. Penjadwalan</h2>
+<p>Berikut rencana indikatif. Sistem sudah terimplementasi; tahapan ini untuk keperluan pelacakan penyelesaian dan penerimaan, dan dapat disesuaikan dengan kesepakatan pemangku kepentingan.</p>
+<table>
+<tr><th>Tahap</th><th>Aktivitas</th><th>Status</th></tr>
+<tr><td>1</td><td>Analisis kebutuhan &amp; desain</td><td>Selesai</td></tr>
+<tr><td>2</td><td>Implementasi fungsional inti (katalog, booking, pembayaran)</td><td>Selesai</td></tr>
+<tr><td>3</td><td>Implementasi panel admin &amp; role-permission</td><td>Selesai</td></tr>
+<tr><td>4</td><td>Pengujian unit &amp; fitur</td><td>Selesai (perlu review)</td></tr>
+<tr><td>5</td><td>Uji penerimaan pengguna (UAT)</td><td>Tertunda</td></tr>
+<tr><td>6</td><td>Deployment produksi &amp; konfigurasi cron/HTTPS</td><td>Tertunda</td></tr>
+<tr><td>7</td><td>Serah terima &amp; pelatihan admin</td><td>Tertunda</td></tr>
+</table>
+
+<hr>
+
+<h2>9. Lampiran</h2>
+
+<h3>9.1 Akun Default (data contoh — wajib diganti sebelum produksi)</h3>
+<table>
+<tr><th>Role</th><th>Email</th><th>Password</th></tr>
+<tr><td>Super Admin</td><td><code>admin@rentalmotor.test</code></td><td><code>password</code></td></tr>
+<tr><td>Admin (operasional)</td><td><code>operasional@rentalmotor.test</code></td><td><code>password</code></td></tr>
+<tr><td>Kasir</td><td><code>kasir@rentalmotor.test</code></td><td><code>password</code></td></tr>
+<tr><td>Staff</td><td><code>staff@rentalmotor.test</code></td><td><code>password</code></td></tr>
+<tr><td>Customer</td><td><code>customer@rentalmotor.test</code></td><td><code>password</code></td></tr>
+</table>
+
+<h3>9.2 Ringkasan Data Contoh</h3>
+<ul>
+<li>70 unit motor trail (9 model), 120 unit jeep (3 model), 4 paket jeep, 3 add-on.</li>
+<li>4 paket wisata + jadwal; beberapa booking (sewa, jeep, pesanan manual WA, open &amp; private trip).</li>
+<li>Promo: <code>HEMAT20</code> (20%, min Rp200.000, maks Rp100.000, kuota 100) dan <code>WEEKEND50</code> (potongan Rp50.000).</li>
+<li>Add-on: sepatu Rp100.000, guide Rp200.000, protector Rp250.000.</li>
+<li>Paket jeep: <em>Jeep Saja</em> Rp1.100.000, <em>Jeep + Trekking</em> Rp1.700.000, tambahan curug +Rp150.000.</li>
+</ul>
+
+<h3>9.3 Matriks Hak Akses (Role × Modul)</h3>
+<table>
+<tr><th>Modul (permission)</th><th>Super Admin</th><th>Admin</th><th>Kasir</th><th>Staff</th></tr>
+<tr><td>dashboard</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>motor</td><td>✔</td><td>✔</td><td>—</td><td>✔</td></tr>
+<tr><td>rental</td><td>✔</td><td>✔</td><td>✔</td><td>—</td></tr>
+<tr><td>pickup</td><td>✔</td><td>✔</td><td>—</td><td>✔</td></tr>
+<tr><td>return</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>payment</td><td>✔</td><td>✔</td><td>✔</td><td>—</td></tr>
+<tr><td>customer</td><td>✔</td><td>✔</td><td>—</td><td>—</td></tr>
+<tr><td>promo</td><td>✔</td><td>✔</td><td>—</td><td>—</td></tr>
+<tr><td>review</td><td>✔</td><td>✔</td><td>—</td><td>—</td></tr>
+<tr><td>gallery</td><td>✔</td><td>✔</td><td>—</td><td>—</td></tr>
+<tr><td>tour</td><td>✔</td><td>✔</td><td>—</td><td>—</td></tr>
+<tr><td>report</td><td>✔</td><td>✔</td><td>—</td><td>—</td></tr>
+<tr><td>settings</td><td>✔</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>users</td><td>✔</td><td>—</td><td>—</td><td>—</td></tr>
+</table>
+
+<h3>9.4 Peta Entitas Data Utama</h3>
+<ul>
+<li><strong>Identitas</strong>: <code>users</code>, <code>customers</code>, <code>roles</code></li>
+<li><strong>Katalog</strong>: <code>motorcycles</code>, <code>motor_categories</code>, <code>motor_images</code>, <code>locations</code>, <code>rental_packages</code>, <code>addons</code></li>
+<li><strong>Transaksi</strong>: <code>rentals</code>, <code>rental_items</code>, <code>rental_returns</code>, <code>payments</code>, <code>payment_methods</code></li>
+<li><strong>Promo</strong>: <code>promos</code>, <code>promo_usages</code></li>
+<li><strong>Wisata</strong>: <code>tour_packages</code>, <code>tour_schedules</code>, <code>tour_bookings</code></li>
+<li><strong>Konten</strong>: <code>galleries</code>, <code>reviews</code>, <code>settings</code>, <code>user_notifications</code></li>
+</ul>
+
+<p><em>Dokumen ini disusun berdasarkan kode sumber dan dokumentasi proyek per 2026-10-12. Perubahan kode yang memengaruhi perilaku sistem harus direfleksikan kembali ke dokumen ini.</em></p>
+
+</body>
+</html>
