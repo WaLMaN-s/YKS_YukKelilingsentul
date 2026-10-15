@@ -9,38 +9,25 @@
         <source type="image/webp" sizes="100vw" srcset="{{ asset('images/hero-960.webp') }} 960w, {{ asset('images/hero-1280.webp') }} 1280w, {{ asset('images/hero-1672.webp') }} 1672w">
         <img src="{{ asset('images/hero.png') }}" alt="" fetchpriority="high" decoding="async" class="absolute inset-0 -z-10 h-full w-full object-cover">
     </picture>
-    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-navy-950 via-navy-950/80 to-navy-950/20"></div>
-    <div class="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-navy-950 to-transparent"></div>
+    {{-- Lapisan GELAP di atas foto (dulu memakai token navy-* yang kini bernilai putih → foto jadi pucat). --}}
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-ink/95 via-ink/70 to-ink/5"></div>
+    <div class="absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-ink/70 to-transparent"></div>
 
     <div class="container-x grid gap-10 py-16 sm:py-24 lg:grid-cols-[1.4fr_.6fr] lg:py-28">
         <div>
-            <p class="text-sm font-semibold italic text-brand-ink">Jelajahi Alam, Rasakan Adrenalinnya</p>
-            <h1 class="mt-3 text-4xl font-extrabold leading-[1.05] sm:text-6xl">
+            <p class="text-sm font-semibold italic text-brand">Jelajahi Alam, Rasakan Adrenalinnya</p>
+            <h1 class="mt-3 text-4xl font-extrabold leading-[1.05] text-white sm:text-6xl">
                 Jelajahi Lebih Bebas<br>
-                <span class="italic text-brand-ink">Dengan Motor Pilihanmu</span>
+                <span class="italic text-brand">Dengan Motor Pilihanmu</span>
             </h1>
-            <p class="mt-5 max-w-xl text-base text-slate-600">
+            <p class="mt-5 max-w-xl text-base text-slate-200">
                 Sewa motor mudah, cepat, aman, dan terpercaya.<br class="hidden sm:block">
                 Siap menemani perjalananmu ke mana saja.
             </p>
 
-            <form action="{{ route('motors.index') }}" method="GET" class="mt-8 grid max-w-3xl gap-3 rounded-3xl border border-slate-200 bg-navy-900/85 p-4 shadow-2xl backdrop-blur sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto] lg:items-end">
-                <div>
-                    <label for="home-lokasi" class="label">Lokasi</label>
-                    <select id="home-lokasi" name="lokasi" class="input" aria-label="Lokasi pengambilan">
-                        @foreach ($locations as $loc)<option value="{{ $loc->id }}">{{ $loc->name }}</option>@endforeach
-                    </select>
-                </div>
-                <div>
-                    <label for="home-start" class="label">Tanggal Mulai</label>
-                    <input id="home-start" name="start" type="date" class="input" min="{{ today()->toDateString() }}" value="{{ today()->addDay()->toDateString() }}" required>
-                </div>
-                <div>
-                    <label for="home-end" class="label">Tanggal Kembali</label>
-                    <input id="home-end" name="end" type="date" class="input" min="{{ today()->addDay()->toDateString() }}" value="{{ today()->addDays(2)->toDateString() }}" required>
-                </div>
-                <button class="btn btn-primary h-[42px] sm:col-span-2 lg:col-span-1"><x-icon name="search" class="size-4" /> Cari Motor</button>
-            </form>
+            <div class="mt-8">
+                <a href="{{ route('motors.index') }}" class="btn btn-primary"><x-icon name="search" class="size-4" /> Cari Motor</a>
+            </div>
         </div>
 
         <ul class="hidden space-y-3 self-center lg:block">
@@ -62,7 +49,7 @@
             ['truck', 'Sewa Jeep', $unitCounts['jeep'].' unit, maks 4 orang', route('motors.index', ['jenis' => 'jeep'])],
             ['map', 'Paket Wisata', 'Jelajahi rute terbaik Sentul', route('tours.index')],
             ['image', 'Galeri', 'Lihat keseruan kami', route('gallery')],
-            ['map-pin', 'Basecamp', 'Gunung Pancar', route('contact')],
+            ['map-pin', 'Basecamp', 'Gunung Pancar', route('about')],
             ['circle-check', 'FAQ & Kebijakan', 'Jadwal, batal, bayar', route('faq')],
         ] as [$icon, $title, $sub, $url])
             <a href="{{ $url }}" class="group flex flex-col items-center gap-1 rounded-2xl px-3 py-5 text-center transition hover:bg-slate-900/5">

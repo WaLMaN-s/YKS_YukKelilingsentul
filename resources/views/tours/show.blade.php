@@ -8,7 +8,7 @@
     <div class="space-y-8">
         <img src="{{ $tour->image_url }}" alt="{{ $tour->name }}" class="aspect-[16/9] w-full rounded-3xl border border-slate-200 object-cover">
         <section>
-            <h1 class="text-3xl font-bold">{{ $tour->name }}</h1>
+            <h1 class="text-2xl font-bold sm:text-3xl">{{ $tour->name }}</h1>
             <p class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500">
                 <span class="flex items-center gap-1.5"><x-icon name="clock" class="size-4" /> Durasi {{ $tour->duration }}</span>
                 @if ($tour->destination)<span class="flex items-center gap-1.5"><x-icon name="map-pin" class="size-4" /> {{ $tour->destination }}</span>@endif
@@ -36,7 +36,33 @@
         </section>
         <section>
             <h2 class="mb-3 text-lg font-bold">Jadwal Keberangkatan</h2>
-            <div class="table-wrap">
+
+            {{-- Layar kecil: kartu jadwal (tabel tidak nyaman di HP). --}}
+            <div class="space-y-3 sm:hidden">
+                @forelse ($schedules as $s)
+                    <div class="card flex items-center justify-between gap-3 p-4">
+                        <div class="min-w-0">
+                            <p class="font-semibold text-slate-900">{{ tgl($s->date, 'l, d F Y') }}</p>
+                            @if ($s->notes)<p class="mt-0.5 text-xs text-slate-500">{{ $s->notes }}</p>@endif
+                            <p class="mt-2">
+                                @if ($s->remaining > 0)
+                                    <span class="badge bg-emerald-500/15 text-emerald-700 ring-emerald-200">{{ $s->remaining }} tersisa</span>
+                                @else
+                                    <span class="badge bg-rose-500/15 text-rose-700 ring-rose-200">Penuh</span>
+                                @endif
+                            </p>
+                        </div>
+                        @if ($canBook && $s->remaining > 0)
+                            <a href="{{ route('tour-booking.create', ['slug' => $tour->slug, 'jadwal' => $s->id]) }}" class="btn btn-primary btn-sm shrink-0">Pesan</a>
+                        @endif
+                    </div>
+                @empty
+                    <p class="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-sm text-slate-500">Belum ada jadwal open trip. Tetap bisa berangkat lewat <b class="text-brand-ink">Private Trip</b> di tanggal pilihan Anda.</p>
+                @endforelse
+            </div>
+
+            {{-- Layar sedang ke atas: tabel. --}}
+            <div class="table-wrap hidden sm:block">
                 <table class="table">
                     <thead><tr><th>Tanggal</th><th>Sisa kuota</th><th>Catatan</th><th></th></tr></thead>
                     <tbody>
@@ -72,9 +98,25 @@
     </aside>
 </div>
 @if ($others->isNotEmpty())
-    <div class="container-x pb-14"><h2 class="mb-5 text-xl font-bold">Paket Lainnya</h2>
-        <div class="grid gap-5 md:grid-cols-3">@foreach ($others as $o)
+    <div class="container-x pb-36 sm:pb-14"><h2 class="mb-5 text-xl font-bold">Paket Lainnya</h2>
+        <div class="grid gap-5 sm:grid-cols-2 md:grid-cols-3">@foreach ($others as $o)
             <a href="{{ route('tours.show', $o->slug) }}" class="card overflow-hidden transition hover:border-brand/40"><img src="{{ $o->image_url }}" alt="{{ $o->name }}" loading="lazy" class="aspect-[16/9] w-full object-cover"><div class="p-4"><p class="font-semibold">{{ $o->name }}</p><p class="text-sm text-brand-ink">{{ rupiah($o->price) }}</p></div></a>
         @endforeach</div></div>
 @endif
+
+{{-- CTA lengket di layar kecil: harga + tombol pesan selalu terjangkau ibu jari.
+     Menu bawah tetap memakai navigasi standar situs (partials.bottom-nav). --}}
+<div class="fixed inset-x-0 bottom-[4.5rem] z-30 border-t border-slate-200 bg-navy-950/95 px-4 py-3 backdrop-blur-md sm:hidden">
+    <div class="mx-auto flex max-w-xl items-center justify-between gap-3">
+        <div class="min-w-0">
+            <p class="text-lg font-extrabold leading-none text-brand-ink">{{ rupiah($tour->price) }} <span class="text-[11px] font-normal text-slate-500">/ orang</span></p>
+            <p class="mt-1 truncate text-[11px] text-slate-500">{{ $tour->duration }}@if ($tour->destination) · {{ $tour->destination }}@endif</p>
+        </div>
+        @if ($canBook)
+            <a href="{{ route('tour-booking.create', ['slug' => $tour->slug]) }}" class="btn btn-primary btn-sm shrink-0">Pesan Sekarang</a>
+        @else
+            <a href="{{ route('tours.index') }}" class="btn btn-dark btn-sm shrink-0">Paket lain</a>
+        @endif
+    </div>
+</div>
 @endsection

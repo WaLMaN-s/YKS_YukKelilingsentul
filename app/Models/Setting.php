@@ -15,9 +15,16 @@ class Setting extends Model
 
     protected $fillable = ['key', 'value'];
 
+    /** Cache in-memory per request: menghindari 1 query DB untuk setiap pemanggilan setting(). */
+    private static ?array $memo = null;
+
     public static function allCached(): array
     {
-        return Cache::rememberForever('app_settings', fn () => static::query()->pluck('value', 'key')->all());
+        if (static::$memo !== null) {
+            return static::$memo;
+        }
+
+        return static::$memo = Cache::rememberForever('app_settings', fn () => static::query()->pluck('value', 'key')->all());
     }
 
     public static function get(string $key, mixed $default = null): mixed
@@ -33,5 +40,6 @@ class Setting extends Model
             static::updateOrCreate(['key' => $key], ['value' => $value]);
         }
         Cache::forget('app_settings');
+        static::$memo = null;
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Basis CRUD sederhana untuk data master. Setiap turunan cukup mendefinisikan fields().
@@ -151,22 +152,37 @@ abstract class CrudController extends Controller
         $fields = $this->fields();
         $rules = [];
         $attributes = [];
+        $messages = [];
         foreach ($fields as $name => $field) {
             $rules[$name] = $this->rulesFor($name, $field, $item);
             $attributes[$name] = $field['label'];
+            if (($field['type'] ?? '') === 'image') {
+                $messages[$name.'.uploaded'] = $field['label'].' gagal diunggah — ukurannya melebihi batas server ('.ini_get('upload_max_filesize').'). Perkecil foto, atau naikkan upload_max_filesize & post_max_size di php.ini.';
+            }
         }
-        $validated = $request->validate($rules, [], $attributes);
+        $validated = $request->validate($rules, $messages, $attributes);
 
         $data = [];
         foreach ($fields as $name => $field) {
             switch ($field['type']) {
                 case 'image':
                     if ($request->hasFile($name)) {
+                        // Simpan berkas baru lebih dulu; jangan hapus yang lama sebelum berhasil.
+                        $stored = $request->file($name)->store('uploads/'.Str::slug($this->routeBase), 'public');
+
+                        if (! $stored) {
+                            throw ValidationException::withMessages([
+                                $name => 'Foto gagal disimpan ke storage/app/public. Pastikan foldernya dapat ditulis web server dan symlink sudah dibuat (php artisan storage:link).',
+                            ]);
+                        }
+
                         if ($item && $item->{$name} && ! Str::startsWith($item->{$name}, 'images/')) {
                             Storage::disk('public')->delete($item->{$name});
                         }
-                        $data[$name] = $request->file($name)->store('uploads/'.Str::slug($this->routeBase), 'public');
+
+                        $data[$name] = $stored;
                     }
+
                     break;
                 case 'checkbox':
                     $data[$name] = $request->boolean($name);

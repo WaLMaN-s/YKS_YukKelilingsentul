@@ -142,10 +142,43 @@ Alpine.data('bookingForm', (cfg) => ({
     },
 }));
 
-/* ---------- filter galeri ---------- */
-Alpine.data('galleryFilter', () => ({
+/* ---------- filter galeri + lightbox (navigasi kiri/kanan, keyboard, swipe) ---------- */
+Alpine.data('galleryFilter', (photos = []) => ({
     cat: 'semua',
-    lightbox: null,
+    photos,
+    index: null,
+    touchX: null,
+    get visible() {
+        return this.photos.filter((p) => this.cat === 'semua' || p.category === this.cat);
+    },
+    get current() {
+        return this.index === null ? null : (this.visible[this.index] ?? null);
+    },
+    open(id) {
+        const i = this.visible.findIndex((p) => String(p.id) === String(id));
+        this.index = i < 0 ? 0 : i;
+    },
+    close() {
+        this.index = null;
+    },
+    next() {
+        const n = this.visible.length;
+        if (n > 1 && this.index !== null) this.index = (this.index + 1) % n;
+    },
+    prev() {
+        const n = this.visible.length;
+        if (n > 1 && this.index !== null) this.index = (this.index - 1 + n) % n;
+    },
+    onTouchStart(e) {
+        this.touchX = e.changedTouches[0].clientX;
+    },
+    onTouchEnd(e) {
+        if (this.touchX === null) return;
+        const dx = e.changedTouches[0].clientX - this.touchX;
+        this.touchX = null;
+        if (Math.abs(dx) < 45) return;
+        dx < 0 ? this.next() : this.prev();
+    },
 }));
 
 /* ---------- grafik dashboard admin ---------- */

@@ -81,6 +81,17 @@ class Motorcycle extends Model
         return $query->where('status', '!=', 'inactive');
     }
 
+    /** Total unit per jenis kendaraan (trail/jeep) dalam SATU query — dulu dipanggil dua kali (trail & jeep). */
+    public static function stockByType(): array
+    {
+        return static::visible()
+            ->selectRaw('vehicle_type, sum(stock) as total')
+            ->groupBy('vehicle_type')
+            ->pluck('total', 'vehicle_type')
+            ->map(fn ($total) => (int) $total)
+            ->all();
+    }
+
     public function getImageUrlAttribute(): string
     {
         $image = $this->images->first();

@@ -49,23 +49,27 @@
 <body class="min-h-screen">
 <a href="#konten" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[90] focus:rounded-lg focus:bg-brand focus:px-4 focus:py-2 focus:text-ink">Lewati ke konten</a>
 
-<header class="sticky top-0 z-50 border-b border-slate-200 bg-navy-950/90 backdrop-blur-md">
-    <div class="container-x flex h-16 items-center justify-between gap-4">
-        <a href="{{ route('home') }}" class="flex items-center gap-3" aria-label="{{ $siteName }}">
-            <img src="{{ media_url(setting('logo'), 'images/logo.svg') }}" alt="" class="size-11 rounded-full object-cover">
-            <span class="hidden leading-tight sm:block">
-                <span class="block text-sm font-extrabold uppercase tracking-wide text-slate-900">{{ $siteName }}</span>
-                <span class="block text-[10px] text-slate-500">{{ setting('tagline', 'Sewa Motor Trail & Paket Adventure') }}</span>
+{{-- Header: sembunyi saat scroll ke bawah, muncul lagi saat scroll ke atas (interaktif). --}}
+<header x-data="{ show: true, lastY: 0 }"
+        @scroll.window.throttle.100ms="show = (window.scrollY <= 80) || (window.scrollY < lastY); lastY = window.scrollY"
+        :class="show ? 'translate-y-0' : '-translate-y-full'"
+        class="sticky top-0 z-50 border-b border-slate-200 bg-navy-950/90 backdrop-blur-md transition-transform duration-300">
+    <div class="container-x flex h-16 items-center justify-between gap-2 sm:gap-4">
+        <a href="{{ route('home') }}" class="flex min-w-0 items-center gap-2 sm:gap-3" aria-label="{{ $siteName }}">
+            <img src="{{ media_url(setting('logo'), 'images/logo.svg') }}" alt="" class="size-9 shrink-0 rounded-full object-cover sm:size-11">
+            <span class="min-w-0 leading-tight">
+                <span class="block truncate text-[11px] font-extrabold uppercase tracking-normal text-slate-900 sm:text-sm sm:tracking-wide">{{ $siteName }}</span>
+                <span class="line-clamp-2 text-[9px] text-slate-500 sm:line-clamp-none sm:text-[10px]">{{ setting('tagline', 'Sewa Motor Trail & Paket Adventure') }}</span>
             </span>
         </a>
 
         <nav class="hidden items-center gap-6 lg:flex" aria-label="Menu utama">
-            @foreach ($nav as [$label, $route, $pattern])
-                <a href="{{ route($route) }}" class="nav-link {{ request()->routeIs($pattern) ? 'active' : '' }}">{{ $label }}</a>
+            @foreach ($nav as [$navLabel, $route, $pattern])
+                <a href="{{ route($route) }}" class="nav-link {{ request()->routeIs($pattern) ? 'active' : '' }}">{{ $navLabel }}</a>
             @endforeach
         </nav>
 
-        <div class="flex items-center gap-2">
+        <div class="flex shrink-0 items-center gap-1.5 sm:gap-2">
             @auth
                 @include('partials.notifications')
                 @if (auth()->user()->isAdmin())
@@ -77,8 +81,8 @@
                     <button class="btn btn-ghost btn-sm">Logout</button>
                 </form>
             @else
-                <a href="{{ route('login') }}" class="btn btn-ghost btn-sm hidden sm:inline-flex">Login</a>
-                <a href="{{ route('register') }}" class="btn btn-primary btn-sm hidden sm:inline-flex">Daftar</a>
+                <a href="{{ route('login') }}" class="btn btn-ghost btn-sm !px-2.5 text-[11px] sm:!px-3.5 sm:text-xs">Login</a>
+                <a href="{{ route('register') }}" class="btn btn-primary btn-sm !px-2.5 text-[11px] sm:!px-3.5 sm:text-xs">Daftar</a>
             @endauth
         </div>
     </div>
@@ -103,7 +107,7 @@
         <div>
             <p class="mb-3 text-sm font-semibold text-slate-900">Menu</p>
             <ul class="space-y-2 text-sm text-slate-500">
-                @foreach ($nav as [$label, $route])<li><a class="hover:text-brand-ink" href="{{ route($route) }}">{{ $label }}</a></li>@endforeach
+                @foreach ($nav as [$navLabel, $route])<li><a class="hover:text-brand-ink" href="{{ route($route) }}">{{ $navLabel }}</a></li>@endforeach
                 <li><a class="hover:text-brand-ink" href="{{ route('faq') }}">FAQ</a></li>
             </ul>
         </div>

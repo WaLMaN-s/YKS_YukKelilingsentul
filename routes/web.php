@@ -37,7 +37,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:10,1')->name('register.store');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
-Route::get('/logout', fn () => redirect()->route('home'));
+Route::redirect('/logout', '/', 302);
 
 // Notifikasi & berkas privat (KTP/SIM/bukti bayar) — dipakai akun customer maupun admin/staf.
 Route::middleware(['auth', 'active'])->group(function () {
@@ -54,7 +54,7 @@ Route::middleware(['auth', 'active', 'customer'])->group(function () {
     Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking/quote', [BookingController::class, 'quote'])->middleware('throttle:60,1')->name('booking.quote');
     Route::post('/checkout', [BookingController::class, 'store'])->name('checkout.store');
-    Route::get('/checkout', fn () => redirect()->route('motors.index'));
+    Route::redirect('/checkout', '/motor');
     Route::get('/payment/{rental}', [PaymentController::class, 'show'])->name('payment.show');
     Route::post('/payment/{rental}/bukti', [PaymentController::class, 'uploadProof'])->name('payment.proof');
 
@@ -86,7 +86,7 @@ Route::middleware(['auth', 'active', 'customer'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'active', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', fn () => redirect()->route('admin.dashboard'));
+    Route::redirect('/', '/admin/dashboard');
     Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->middleware('permission:dashboard')->name('dashboard');
 
     // Motor, kategori, lokasi

@@ -62,7 +62,7 @@
         @endforeach
     </nav>
     <div class="mt-4 space-y-1 border-t border-slate-200 pt-4">
-        <a href="{{ route('home') }}" target="_blank" class="side-link"><x-icon name="external-link" class="size-[18px]" /> Lihat Website</a>
+        <a href="{{ route('home') }}" class="side-link"><x-icon name="external-link" class="size-[18px]" /> Lihat Website</a>
         <form method="POST" action="{{ route('logout') }}">@csrf<button class="side-link w-full text-rose-700"><x-icon name="log-out" class="size-[18px]" /> Logout</button></form>
     </div>
 </aside>

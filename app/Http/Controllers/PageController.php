@@ -18,8 +18,10 @@ class PageController extends Controller
 
     public function about()
     {
+        $stock = Motorcycle::stockByType();
+
         return view('pages.about', [
-            'unitCounts' => ['trail' => (int) Motorcycle::visible()->ofType('trail')->sum('stock'), 'jeep' => (int) Motorcycle::visible()->ofType('jeep')->sum('stock')],
+            'unitCounts' => ['trail' => $stock['trail'] ?? 0, 'jeep' => $stock['jeep'] ?? 0],
             'facilities' => preg_split('/\r\n|\r|\n/', (string) setting('basecamp_facilities', ''), -1, PREG_SPLIT_NO_EMPTY),
         ]);
     }
