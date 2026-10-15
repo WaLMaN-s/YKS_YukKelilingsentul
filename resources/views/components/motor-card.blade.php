@@ -2,6 +2,7 @@
 @php
     $isAvailable = $motor->status === 'available';
     $params = array_filter(['motor' => $motor->slug, 'start' => $start, 'end' => $end, 'lokasi' => $location]);
+    $canBook = ! auth()->check() || auth()->user()->isCustomer();
 @endphp
 <article class="group card overflow-hidden transition duration-300 hover:-translate-y-1 hover:border-brand/40">
     <a href="{{ route('motors.show', $motor->slug) }}" class="relative block overflow-hidden">
@@ -34,10 +35,12 @@
             @else{{ rupiah($motor->price_daily) }} <span class="text-xs font-normal text-slate-500">/ hari</span>@endif
         </p>
         <div class="mt-2 grid grid-cols-2 gap-1.5 sm:mt-3 sm:gap-2">
-            <a href="{{ route('motors.show', $motor->slug) }}" class="btn btn-ghost btn-sm px-2">
+            <a href="{{ route('motors.show', $motor->slug) }}" class="btn btn-ghost btn-sm px-2 {{ $canBook ? '' : 'col-span-2' }}">
                 <span class="sm:hidden">Detail</span><span class="hidden sm:inline">Lihat Detail</span>
             </a>
-            @if ($isAvailable)
+            @if (! $canBook)
+                {{-- Akun admin/staf: tidak ada tombol pemesanan. --}}
+            @elseif ($isAvailable)
                 <a href="{{ route('booking.create', $params) }}" class="btn btn-primary btn-sm px-2">
                     <span class="sm:hidden">Sewa</span><span class="hidden sm:inline">Sewa Sekarang</span>
                 </a>

@@ -39,7 +39,17 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
 Route::get('/logout', fn () => redirect()->route('home'));
 
+// Notifikasi & berkas privat (KTP/SIM/bukti bayar) — dipakai akun customer maupun admin/staf.
 Route::middleware(['auth', 'active'])->group(function () {
+    Route::get('/notifikasi/{notification}', [NotificationController::class, 'open'])->name('notifications.open');
+    Route::post('/notifikasi/baca-semua', [NotificationController::class, 'readAll'])->name('notifications.read-all');
+    Route::get('/berkas/dokumen/{customer}/{type}', [FileController::class, 'document'])->name('files.document');
+    Route::get('/berkas/bukti-wisata/{booking}', [FileController::class, 'tourProof'])->name('files.tour-proof');
+    Route::get('/berkas/bukti/{payment}', [FileController::class, 'proof'])->name('files.proof');
+});
+
+// Pemesanan & dashboard customer — akun admin/staf tidak bisa memesan dari website.
+Route::middleware(['auth', 'active', 'customer'])->group(function () {
     // Booking → checkout → pembayaran
     Route::get('/booking', [BookingController::class, 'create'])->name('booking.create');
     Route::post('/booking/quote', [BookingController::class, 'quote'])->middleware('throttle:60,1')->name('booking.quote');
@@ -68,13 +78,6 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::get('/dashboard/payments', [DashboardController::class, 'payments'])->name('dashboard.payments');
     Route::get('/dashboard/reviews', [DashboardController::class, 'reviews'])->name('dashboard.reviews');
     Route::post('/dashboard/reviews/{rental}', [DashboardController::class, 'storeReview'])->name('dashboard.reviews.store');
-
-    // Notifikasi & berkas privat (KTP/SIM/bukti bayar)
-    Route::get('/notifikasi/{notification}', [NotificationController::class, 'open'])->name('notifications.open');
-    Route::post('/notifikasi/baca-semua', [NotificationController::class, 'readAll'])->name('notifications.read-all');
-    Route::get('/berkas/dokumen/{customer}/{type}', [FileController::class, 'document'])->name('files.document');
-    Route::get('/berkas/bukti-wisata/{booking}', [FileController::class, 'tourProof'])->name('files.tour-proof');
-    Route::get('/berkas/bukti/{payment}', [FileController::class, 'proof'])->name('files.proof');
 });
 
 /*

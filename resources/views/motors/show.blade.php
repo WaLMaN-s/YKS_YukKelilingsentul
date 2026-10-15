@@ -6,6 +6,7 @@
 @section('content')
 @php
     $isAvailable = $motor->status === 'available';
+    $canBook = ! auth()->check() || auth()->user()->isCustomer();
     $waText = "Halo Admin,\n\nSaya ingin menyewa:\n\nMotor:\n".$motor->name;
 @endphp
 <div class="container-x py-8">
@@ -130,10 +131,18 @@
                     <p class="mt-2 text-sm text-slate-500">Harga per jeep · maks {{ $motor->capacity }} orang</p>
                     <div class="mt-3 space-y-2">
                         @foreach ($packages as $pk)
-                            <a href="{{ $isAvailable ? route('booking.create', ['motor' => $motor->slug, 'paket' => $pk->id]) : '#' }}" class="block rounded-xl border border-slate-200 bg-navy-900 p-3 transition hover:border-brand/50">
+                            @if ($canBook && $isAvailable)
+                                <a href="{{ route('booking.create', ['motor' => $motor->slug, 'paket' => $pk->id]) }}" class="block rounded-xl border border-slate-200 bg-navy-900 p-3 transition hover:border-brand/50">
+                            @else
+                                <div class="rounded-xl border border-slate-200 bg-navy-900 p-3">
+                            @endif
                                 <span class="flex items-center justify-between gap-3"><b class="text-sm text-slate-900">{{ $pk->name }}</b><b class="text-brand-ink">{{ rupiah($pk->price) }}</b></span>
                                 @if ($pk->includes)<span class="mt-1 block text-xs text-slate-500">{{ implode(' · ', $pk->includes) }}</span>@endif
-                            </a>
+                            @if ($canBook && $isAvailable)
+                                </a>
+                            @else
+                                </div>
+                            @endif
                         @endforeach
                     </div>
                     <dl class="mt-3 divide-y divide-slate-200 rounded-xl bg-navy-900 px-4 text-sm">
@@ -153,10 +162,12 @@
                         @foreach ($addons as $ad)<p class="flex justify-between"><span>{{ $ad->name }}</span><span>{{ rupiah($ad->price) }} {{ $ad->per === 'person' ? '/ orang' : '' }}</span></p>@endforeach
                     </div>
                 @endif
-                @if ($isAvailable)
+                @if (! $isAvailable)
+                    <p class="rounded-xl bg-amber-500/10 p-3 text-sm text-amber-700">Motor ini sedang tidak tersedia untuk disewa.</p>
+                @elseif ($canBook)
                     <a href="{{ route('booking.create', ['motor' => $motor->slug]) }}" class="btn btn-primary w-full">Sewa Sekarang</a>
                 @else
-                    <p class="rounded-xl bg-amber-500/10 p-3 text-sm text-amber-700">Motor ini sedang tidak tersedia untuk disewa.</p>
+                    <p class="rounded-xl bg-sky-500/10 p-3 text-sm text-sky-700">Anda masuk sebagai admin/staf — pemesanan dari website hanya untuk akun customer. Kelola data motor lewat dashboard admin.</p>
                 @endif
                 <a href="{{ wa_link($waText) }}" target="_blank" rel="noopener" class="btn btn-ghost w-full"><x-icon name="message-circle" class="size-4" /> Tanya via WhatsApp</a>
                 @include('partials.policies', ['kind' => 'sewa'])

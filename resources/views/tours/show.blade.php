@@ -3,6 +3,7 @@
 @section('description', \Illuminate\Support\Str::limit($tour->description ?? $tour->name, 155))
 @section('og_image', $tour->image_url)
 @section('content')
+@php $canBook = ! auth()->check() || auth()->user()->isCustomer(); @endphp
 <div class="container-x grid gap-8 py-10 lg:grid-cols-[1.3fr_.7fr]">
     <div class="space-y-8">
         <img src="{{ $tour->image_url }}" alt="{{ $tour->name }}" class="aspect-[16/9] w-full rounded-3xl border border-slate-200 object-cover">
@@ -45,7 +46,7 @@
                             <td class="font-medium text-slate-900">{{ tgl($s->date, 'l, d F Y') }}</td>
                             <td>@if ($s->remaining > 0)<span class="badge bg-emerald-500/15 text-emerald-700 ring-emerald-200">{{ $s->remaining }} tersisa</span>@else<span class="badge bg-rose-500/15 text-rose-700 ring-rose-200">Penuh</span>@endif</td>
                             <td class="text-slate-500">{{ $s->notes }}</td>
-                            <td class="text-right">@if ($s->remaining > 0)<a href="{{ route('tour-booking.create', ['slug' => $tour->slug, 'jadwal' => $s->id]) }}" class="btn btn-primary btn-sm">Pesan</a>@endif</td>
+                            <td class="text-right">@if ($canBook && $s->remaining > 0)<a href="{{ route('tour-booking.create', ['slug' => $tour->slug, 'jadwal' => $s->id]) }}" class="btn btn-primary btn-sm">Pesan</a>@endif</td>
                         </tr>
                     @empty
                         <tr><td colspan="4" class="py-8 text-center text-slate-500">Belum ada jadwal open trip. Tetap bisa berangkat lewat <b class="text-brand-ink">Private Trip</b> di tanggal pilihan Anda.</td></tr>
@@ -59,7 +60,11 @@
         <div class="card card-pad space-y-4 lg:sticky lg:top-24">
             <p class="text-3xl font-extrabold text-brand-ink">{{ rupiah($tour->price) }} <span class="text-sm font-normal text-slate-500">/ orang</span></p>
             @if ($tour->own_motor)<span class="badge bg-sky-500/15 text-sky-700 ring-sky-200">Bawa motor pribadi</span>@endif
-            <a href="{{ route('tour-booking.create', ['slug' => $tour->slug]) }}" class="btn btn-primary w-full">Pesan Sekarang</a>
+            @if ($canBook)
+                <a href="{{ route('tour-booking.create', ['slug' => $tour->slug]) }}" class="btn btn-primary w-full">Pesan Sekarang</a>
+            @else
+                <p class="rounded-xl bg-sky-500/10 p-3 text-sm text-sky-700">Anda masuk sebagai admin/staf — pemesanan dari website hanya untuk akun customer. Kelola booking wisata lewat dashboard admin.</p>
+            @endif
             <p class="text-xs text-slate-500">Tidak ada jadwal open trip? Pilih <b class="text-slate-700">Private Trip</b> dan tentukan tanggal sendiri.</p>
             <a href="{{ wa_link("Halo Admin,\n\nSaya tertarik dengan paket wisata:\n\n".$tour->name) }}" target="_blank" rel="noopener" class="btn btn-ghost w-full"><x-icon name="message-circle" class="size-4" /> Tanya via WhatsApp</a>
             @include('partials.policies', ['kind' => 'trip'])

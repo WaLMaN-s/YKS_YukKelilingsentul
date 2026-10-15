@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Motorcycle;
 use App\Models\Rental;
+use App\Models\TourPackage;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -71,6 +72,25 @@ class SiteTest extends TestCase
         $this->get("/dashboard/bookings/{$other->id}")->assertForbidden();
         $this->get("/payment/{$other->id}")->assertForbidden();
         $this->get('/admin/dashboard')->assertForbidden();
+    }
+
+    public function test_admin_cannot_book_and_is_redirected_to_the_admin_dashboard(): void
+    {
+        $admin = User::where('email', 'admin@rentalmotor.test')->first();
+        $motor = Motorcycle::where('status', 'available')->first();
+        $tour = TourPackage::where('is_active', true)->first();
+
+        $this->actingAs($admin);
+
+        foreach (['/dashboard', "/booking?motor={$motor->slug}", '/dashboard/bookings', "/paket-wisata/{$tour->slug}/pesan"] as $url) {
+            $this->get($url)->assertRedirect('/admin/dashboard');
+        }
+
+        $this->postJson('/booking/quote', ['motor_id' => $motor->id, 'start_date' => now()->addDays(3)->toDateString()])->assertForbidden();
+        $this->post('/checkout', [])->assertRedirect('/admin/dashboard');
+
+        // Notifikasi tetap bisa diakses admin dari dashboard.
+        $this->get('/admin/dashboard')->assertOk();
     }
 
     public function test_login_works_and_wrong_password_fails(): void
